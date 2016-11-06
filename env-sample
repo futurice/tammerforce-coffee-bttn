@@ -1,0 +1,5 @@
+export FLOWDOCK_URL=Flowdock flow URL.
+export FLOWDOCK_THREAD_ID=Flowdock thread ID.
+export FLOWDOCK_FLOW_TOKEN=https://www.flowdock.com/api/integration-getting-started
+export GIF_KEYWORD=Search these GIFs
+export DELAY=Minutes to delay post to Flowdock

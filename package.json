@@ -1,0 +1,15 @@
+{
+  "name": "coffee-bttn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Hannu-Pekka Heinäjärvi <hannu-pekka.heinajarvi@futurice.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.3.4",
+    "hapi": "^13.2.1",
+    "joi": "^8.0.4",
+    "superagent": "^1.8.1",
+    "superagent-bluebird-promise": "^3.0.0"
+  }
+}
