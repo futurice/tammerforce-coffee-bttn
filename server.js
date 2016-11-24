@@ -2,6 +2,7 @@ var Hapi = require('hapi');
 var Joi = require('joi');
 var superagent = require('superagent-bluebird-promise');
 var Promise = require('bluebird');
+var moment = require('moment');
 var server = new Hapi.Server();
 
 // Server config.
@@ -25,6 +26,9 @@ server.route({
     timeout = setTimeout(function() {
       // Logging.
       console.log('Executing');
+
+      var iot_super_mode = request.payload && request.payload.iot_super_mode || false;
+      var callback_url = request.payload && request.payload.callback_url || false;
 
       // Request data.
       var data = {
@@ -66,7 +70,20 @@ server.route({
         // Send request to given url.
         return superagent.post(process.env.FLOWDOCK_URL).send(data);
       })
-      .then()
+      .then(function() {
+        if (iot_super_mode && callback_url) {
+          var week_start = moment().locale('fi').startOf('week').unix();
+          var feed_api_url = "https://api.bt.tn/2014-06/8649/feed?filter=pressed&after=" + week_start;
+          return superagent.get(feed_api_url)
+            .then(function(response) {
+              var count = response.body.events.length;
+
+              return superagent.get(callback_url + count);
+            });
+        }
+
+        return Promise.resolve({});
+      })
       .catch(function(err) {
         console.log(err);
       })
