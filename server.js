@@ -3,6 +3,7 @@ var Joi = require('joi');
 var superagent = require('superagent-bluebird-promise');
 var Promise = require('bluebird');
 var moment = require('moment');
+var _ = require('lodash');
 var server = new Hapi.Server();
 
 // Server config.
@@ -45,17 +46,12 @@ server.route({
           resolve(false);
         }
 
+        // Fetch gif and resolve with its URL.
         superagent
-          .get('http://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&q=coffee&limit=0')
+          // Using public beta key: https://github.com/Giphy/GiphyAPI#public-beta-key
+          .get('http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&q=' + process.env.GIF_KEYWORD)
           .then(function(result) {
-            var index = Math.floor(Math.random() * result.body.pagination.total_count);
-            // Fetch gif and resolve with its URL.
-            superagent
-              // Using public beta key: https://github.com/Giphy/GiphyAPI#public-beta-key
-              .get('http://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&q=' + process.env.GIF_KEYWORD + '&limit=1&offset=' + index)
-              .then(function(result) {
-                resolve(result.body.data[0].images.downsized.url);
-              });
+            resolve(_.get(result, 'body.data.fixed_height_downsampled_url'));
           })
           .catch(function(err) {
             resolve(false);
