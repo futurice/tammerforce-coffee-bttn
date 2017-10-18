@@ -16,6 +16,24 @@ var timeout = null;
 // Routing.
 server.route({
   method: 'POST',
+  path: '/last',
+  handler: function(request, reply) {
+    superagent.get(process.env.BTTN_EVENT_LOG)
+      .then(function(result) {
+        var timestamp = moment(_.get(result, 'body.events.0.local_time'));
+        var lastbrew = timestamp.isSame(moment(), 'day')
+          ? timestamp.format('[at] H:mm') + ', ' + timestamp.fromNow()
+          : timestamp.format('dddd D.M [at] H:mm')
+        return reply({ response_type: 'ephemeral', text: 'Coffee last brewed ' + lastbrew });
+      })
+      .catch(function() {
+        return reply('error').code(500)
+      });
+  }
+});
+
+server.route({
+  method: 'POST',
   path: '/',
   handler: function(request, reply) {
     // Allow only one timeout set. Poor mans throttling ;(
