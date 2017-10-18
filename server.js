@@ -32,11 +32,14 @@ server.route({
       var callback_url = request.payload && request.payload.callback_url || false;
 
       // Request data.
-      var data = {
-        flow_token: process.env.FLOWDOCK_FLOW_TOKEN,
-        event: 'message',
-        content: 'Fresh coffee in the kitchen!',
-        thread_id: process.env.FLOWDOCK_THREAD_ID
+      // var data = { // Flowdock
+      //   flow_token: process.env.FLOWDOCK_FLOW_TOKEN,
+      //   event: 'message',
+      //   content: 'Fresh coffee in the kitchen!',
+      //   thread_id: process.env.FLOWDOCK_THREAD_ID
+      // };
+      var data = { // Slack
+        text: 'Fresh coffee in the kitchen!'
       };
 
       // New promise for fetching gif.
@@ -60,11 +63,13 @@ server.route({
       .then(function(image_url) {
         // If got gif, append to message content.
         if (image_url) {
-          data.content += ' ' + image_url;
+          // data.content += ' ' + image_url; // Flowdock
+          data.text += '\n' + image_url; // Slack
         }
 
         // Send request to given url.
-        return superagent.post(process.env.FLOWDOCK_URL).send(data);
+        // return superagent.post(process.env.FLOWDOCK_URL).send(data); // Flowdock
+        return superagent.post(process.env.SLACK_URL).send(data); // Slack
       })
       .then(function() {
         if (iot_super_mode && callback_url) {
